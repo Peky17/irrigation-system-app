@@ -1,4 +1,4 @@
-package com.peky.irrigation_app.ui.bluetooth;
+package com.peky.irrigation_app.ui.pair;
 
 import android.view.LayoutInflater;
 import android.view.View;
