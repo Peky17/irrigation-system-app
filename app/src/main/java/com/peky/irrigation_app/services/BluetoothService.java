@@ -24,6 +24,7 @@ import java.util.UUID;
 public class BluetoothService {
 
     private BluetoothAdapter bluetoothAdapter;
+    private BluetoothSocket bluetoothSocket;
     private Context context;
     private AlertDialog alertDialog;
 
@@ -82,15 +83,27 @@ public class BluetoothService {
                 socket.connect();
                 ((Activity) context).runOnUiThread(() -> {
                     alertDialog.dismiss();
-                    Toast.makeText(context, "Conexión BT exitosa", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Bluetooth connection successful", Toast.LENGTH_SHORT).show();
                 });
             } catch (IOException e) {
                 e.printStackTrace();
                 ((Activity) context).runOnUiThread(() -> {
                     alertDialog.dismiss();
-                    Toast.makeText(context, "Error de conexión", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Failed bluetooth connection", Toast.LENGTH_SHORT).show();
                 });
             }
         }).start();
+    }
+
+    public void disconnect() {
+        try {
+            if (bluetoothSocket != null) {
+                bluetoothSocket.close();
+                Toast.makeText(context, "Bluetooth disconnected", Toast.LENGTH_SHORT).show();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(context, "Failed bluetooth disconnection", Toast.LENGTH_SHORT).show();
+        }
     }
 }
