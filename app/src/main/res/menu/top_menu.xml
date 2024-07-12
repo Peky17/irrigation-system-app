@@ -7,8 +7,4 @@
     <item
         android:id="@+id/action_settings"
         android:title="@string/title_settings" />
-
-    <item
-        android:id="@+id/action_bt_disconnect"
-        android:title="@string/title_disconnect_bt" />
 </menu>

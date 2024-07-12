@@ -81,6 +81,7 @@ public class BluetoothService {
                 }
                 BluetoothSocket socket = device.createRfcommSocketToServiceRecord(uuid);
                 socket.connect();
+                bluetoothSocket = socket;
                 ((Activity) context).runOnUiThread(() -> {
                     alertDialog.dismiss();
                     Toast.makeText(context, "Bluetooth connection successful", Toast.LENGTH_SHORT).show();
@@ -96,14 +97,17 @@ public class BluetoothService {
     }
 
     public void disconnect() {
-        try {
-            if (bluetoothSocket != null) {
+        if (bluetoothSocket != null && bluetoothSocket.isConnected()) {
+            try {
                 bluetoothSocket.close();
-                Toast.makeText(context, "Bluetooth disconnected", Toast.LENGTH_SHORT).show();
+                bluetoothSocket = null;
+                Toast.makeText(context, "Disconnected successfully", Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(context, "Error disconnecting", Toast.LENGTH_SHORT).show();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(context, "Failed bluetooth disconnection", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "Not connected yet", Toast.LENGTH_SHORT).show();
         }
     }
 }
