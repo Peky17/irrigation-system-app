@@ -45,7 +45,12 @@ dependencies {
     implementation(libs.navigation.ui)
     implementation(libs.legacy.support.v4)
     implementation(libs.recyclerview)
-//    implementation(libs.annotation.jvm)
+
+    // Dependencias de SQLite y Room
+    implementation("androidx.sqlite:sqlite:2.2.0")
+    implementation("androidx.room:room-runtime:2.4.0-alpha02")
+    annotationProcessor("androidx.room:room-compiler:2.4.0-alpha02")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

@@ -44,7 +44,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Bomba #1"
+                        android:text="Main actuator"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"/>
                     <TextView
                         android:layout_width="wrap_content"
@@ -55,6 +55,7 @@
                 </LinearLayout>
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/main_actuator_switch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
@@ -94,7 +95,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Bomba #2"
+                        android:text="Secondary actuator"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"/>
                     <TextView
                         android:layout_width="wrap_content"
@@ -105,6 +106,7 @@
                 </LinearLayout>
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/secondary_actuator_switch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
@@ -144,7 +146,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Bomba #3"
+                        android:text="Automatic watering"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"/>
                     <TextView
                         android:layout_width="wrap_content"
@@ -155,6 +157,7 @@
                 </LinearLayout>
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/automatic_watering_switch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
