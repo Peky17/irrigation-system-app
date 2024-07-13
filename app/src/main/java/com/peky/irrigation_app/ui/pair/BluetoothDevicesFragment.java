@@ -29,7 +29,7 @@ public class BluetoothDevicesFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        bluetoothService = new BluetoothService(getContext());
+        bluetoothService = BluetoothService.getInstance(getContext());
 
         if (!bluetoothService.isBluetoothSupported()) {
             Toast.makeText(getContext(), "Bluetooth not supported", Toast.LENGTH_SHORT).show();

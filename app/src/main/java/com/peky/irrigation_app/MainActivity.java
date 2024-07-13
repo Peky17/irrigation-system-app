@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
 
         // Initialize BluetoothService
-        bluetoothService = new BluetoothService(this);
+        bluetoothService = BluetoothService.getInstance(this);
     }
 
     @Override

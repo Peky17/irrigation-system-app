@@ -23,14 +23,24 @@ import java.util.UUID;
 
 public class BluetoothService {
 
+    private static BluetoothService instance;
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothSocket bluetoothSocket;
     private Context context;
     private AlertDialog alertDialog;
 
-    public BluetoothService(Context context) {
+    // Private constructor to prevent instantiation
+    private BluetoothService(Context context) {
         this.context = context;
         this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    }
+
+    // Method to get the single instance of BluetoothService
+    public static synchronized BluetoothService getInstance(Context context) {
+        if (instance == null) {
+            instance = new BluetoothService(context);
+        }
+        return instance;
     }
 
     public boolean isBluetoothSupported() {
@@ -39,6 +49,23 @@ public class BluetoothService {
 
     public boolean isBluetoothEnabled() {
         return bluetoothAdapter.isEnabled();
+    }
+
+    public boolean isDevicePaired(String deviceAddress) {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        }
+        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+        for (BluetoothDevice device : pairedDevices) {
+            if (device.getAddress().equals(deviceAddress)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isDeviceConnected() {
+        return bluetoothSocket != null && bluetoothSocket.isConnected();
     }
 
     public ArrayList<String> listPairedDevices() {
@@ -58,13 +85,14 @@ public class BluetoothService {
     public void connectToDevice(String deviceInfo) {
         String[] deviceDetails = deviceInfo.split("\n");
         if (deviceDetails.length < 2) {
-            Toast.makeText(context, "Invalid device information", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Información del dispositivo no válida", Toast.LENGTH_SHORT).show();
             return;
         }
         String deviceAddress = deviceDetails[1];
         BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceAddress);
         UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
+        // Use getActivity() to get the current activity context
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.progress, null);
 
@@ -84,30 +112,49 @@ public class BluetoothService {
                 bluetoothSocket = socket;
                 ((Activity) context).runOnUiThread(() -> {
                     alertDialog.dismiss();
-                    Toast.makeText(context, "Bluetooth connection successful", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Conexión Bluetooth exitosa", Toast.LENGTH_SHORT).show();
                 });
             } catch (IOException e) {
                 e.printStackTrace();
                 ((Activity) context).runOnUiThread(() -> {
                     alertDialog.dismiss();
-                    Toast.makeText(context, "Failed bluetooth connection", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Falló la conexión Bluetooth", Toast.LENGTH_SHORT).show();
                 });
             }
         }).start();
     }
 
-    public void disconnect() {
+    public void sendData(String data, String message) {
         if (bluetoothSocket != null && bluetoothSocket.isConnected()) {
             try {
-                bluetoothSocket.close();
-                bluetoothSocket = null;
-                Toast.makeText(context, "Disconnected successfully", Toast.LENGTH_SHORT).show();
+                bluetoothSocket.getOutputStream().write(data.getBytes());
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
                 e.printStackTrace();
-                Toast.makeText(context, "Error disconnecting", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Error al enviar el comando", Toast.LENGTH_SHORT).show();
             }
         } else {
-            Toast.makeText(context, "Not connected yet", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Bluetooth no está conectado", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public String receiveData() {
+        if (bluetoothSocket != null && bluetoothSocket.isConnected()) {
+            try {
+                byte[] buffer = new byte[1024]; // Buffer de tamaño adecuado
+                int bytes;
+                bytes = bluetoothSocket.getInputStream().read(buffer);
+                String receivedData = new String(buffer, 0, bytes);
+                Toast.makeText(context, "Datos recibidos exitosamente", Toast.LENGTH_SHORT).show();
+                return receivedData;
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(context, "Error al recibir datos", Toast.LENGTH_SHORT).show();
+                return null;
+            }
+        } else {
+            Toast.makeText(context, "Bluetooth no está conectado", Toast.LENGTH_SHORT).show();
+            return null;
         }
     }
 }
