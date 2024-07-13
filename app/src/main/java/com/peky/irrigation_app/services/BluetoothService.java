@@ -85,7 +85,7 @@ public class BluetoothService {
     public void connectToDevice(String deviceInfo) {
         String[] deviceDetails = deviceInfo.split("\n");
         if (deviceDetails.length < 2) {
-            Toast.makeText(context, "Información del dispositivo no válida", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Device information is invalid", Toast.LENGTH_SHORT).show();
             return;
         }
         String deviceAddress = deviceDetails[1];
@@ -112,13 +112,13 @@ public class BluetoothService {
                 bluetoothSocket = socket;
                 ((Activity) context).runOnUiThread(() -> {
                     alertDialog.dismiss();
-                    Toast.makeText(context, "Conexión Bluetooth exitosa", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Bluetooth connection is successful", Toast.LENGTH_SHORT).show();
                 });
             } catch (IOException e) {
                 e.printStackTrace();
                 ((Activity) context).runOnUiThread(() -> {
                     alertDialog.dismiss();
-                    Toast.makeText(context, "Falló la conexión Bluetooth", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Failed to connect to Bluetooth device", Toast.LENGTH_SHORT).show();
                 });
             }
         }).start();

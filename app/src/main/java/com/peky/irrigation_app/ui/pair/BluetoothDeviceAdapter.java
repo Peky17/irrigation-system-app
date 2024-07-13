@@ -37,6 +37,8 @@ public class BluetoothDeviceAdapter extends RecyclerView.Adapter<BluetoothDevice
             @Override
             public void onClick(View v) {
                 bluetoothDevicesFragment.connectToDevice(deviceList.get(holder.getBindingAdapterPosition()));
+                // go back
+                bluetoothDevicesFragment.getActivity().onBackPressed();
             }
         });
     }

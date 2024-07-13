@@ -42,6 +42,8 @@ public class HomeFragment extends Fragment {
             if (binding.mainActuatorSwitch.isChecked() != isChecked) {
                 binding.mainActuatorSwitch.setChecked(isChecked);
             }
+            // Habilita o deshabilita el switch según el estado de riego automático
+            binding.mainActuatorSwitch.setEnabled(!homeViewModel.getAutomaticWateringState().getValue());
         });
 
         // Observa el estado del actuador secundario
@@ -49,6 +51,8 @@ public class HomeFragment extends Fragment {
             if (binding.secondaryActuatorSwitch.isChecked() != isChecked) {
                 binding.secondaryActuatorSwitch.setChecked(isChecked);
             }
+            // Habilita o deshabilita el switch según el estado de riego automático
+            binding.secondaryActuatorSwitch.setEnabled(!homeViewModel.getAutomaticWateringState().getValue());
         });
 
         // Observa el estado del riego automático
@@ -56,6 +60,9 @@ public class HomeFragment extends Fragment {
             if (binding.automaticWateringSwitch.isChecked() != isChecked) {
                 binding.automaticWateringSwitch.setChecked(isChecked);
             }
+            // Habilita o deshabilita los otros switches cuando se activa el riego automático
+            binding.mainActuatorSwitch.setEnabled(!isChecked);
+            binding.secondaryActuatorSwitch.setEnabled(!isChecked);
         });
 
         // Configura listeners para cambiar el estado de los switches
@@ -63,7 +70,7 @@ public class HomeFragment extends Fragment {
             if (Boolean.TRUE.equals(homeViewModel.getMainActuatorState().getValue()) != isChecked) {
                 homeViewModel.setMainActuatorState(isChecked);
                 DeviceCommandService command = isChecked ? DeviceCommandService.MAIN_ACTUATOR_ON : DeviceCommandService.MAIN_ACTUATOR_OFF;
-                sendBluetoothCommand(command.getCommand(), "Actuador principal activado");
+                sendBluetoothCommand(command.getCommand(), "Main actuator switched");
             }
         });
 
@@ -71,18 +78,20 @@ public class HomeFragment extends Fragment {
             if (Boolean.TRUE.equals(homeViewModel.getSecondaryActuatorState().getValue()) != isChecked) {
                 homeViewModel.setSecondaryActuatorState(isChecked);
                 DeviceCommandService command = isChecked ? DeviceCommandService.SECONDARY_ACTUATOR_ON : DeviceCommandService.SECONDARY_ACTUATOR_OFF;
-                sendBluetoothCommand(command.getCommand(), "Actuador secundario activado");
+                sendBluetoothCommand(command.getCommand(), "Secondary actuator switched");
             }
         });
 
         binding.automaticWateringSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (Boolean.TRUE.equals(homeViewModel.getAutomaticWateringState().getValue()) != isChecked) {
+                // Cambia el estado de riego automático
                 homeViewModel.setAutomaticWateringState(isChecked);
                 DeviceCommandService command = isChecked ? DeviceCommandService.AUTOMATIC_WATERING_ON : DeviceCommandService.AUTOMATIC_WATERING_OFF;
-                sendBluetoothCommand(command.getCommand(), "Riego automático activado");
+                sendBluetoothCommand(command.getCommand(), "Automatic watering switched");
             }
         });
     }
+
 
     private void sendBluetoothCommand(String btCommand, String message) {
         if (bluetoothService.isBluetoothEnabled()) {
