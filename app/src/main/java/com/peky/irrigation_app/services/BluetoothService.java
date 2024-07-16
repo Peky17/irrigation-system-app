@@ -29,6 +29,9 @@ public class BluetoothService {
     private Context context;
     private AlertDialog alertDialog;
 
+    private Thread receiveThread;
+    private boolean receiving = false;
+
     // Private constructor to prevent instantiation
     private BluetoothService(Context context) {
         this.context = context;
@@ -155,6 +158,51 @@ public class BluetoothService {
         } else {
             Toast.makeText(context, "Bluetooth no está conectado", Toast.LENGTH_SHORT).show();
             return null;
+        }
+    }
+
+    public void closeConnection() {
+        if (bluetoothSocket != null) {
+            try {
+                bluetoothSocket.close();
+                bluetoothSocket = null;
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(context, "Failed to connect to close bluetooth connection", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public void startReceivingData() {
+        receiving = true;
+        receiveThread = new Thread(() -> {
+            while (receiving) {
+                try {
+                    byte[] buffer = new byte[1024]; // Buffer de tamaño adecuado
+                    int bytes = bluetoothSocket.getInputStream().read(buffer);
+                    if (bytes != -1) {
+                        String receivedData = new String(buffer, 0, bytes);
+                        // Manejar los datos recibidos aquí (por ejemplo, actualizar la UI)
+                        ((Activity) context).runOnUiThread(() -> {
+                            Toast.makeText(context, "Datos recibidos: " + receivedData, Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        receiveThread.start();
+    }
+
+    public void stopReceivingData() {
+        receiving = false;
+        if (receiveThread != null && receiveThread.isAlive()) {
+            try {
+                receiveThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

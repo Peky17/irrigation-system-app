@@ -46,10 +46,14 @@ dependencies {
     implementation(libs.legacy.support.v4)
     implementation(libs.recyclerview)
 
-    // Dependencias de SQLite y Room
+    // SQLite y Room dependencies
     implementation("androidx.sqlite:sqlite:2.2.0")
     implementation("androidx.room:room-runtime:2.4.0-alpha02")
     annotationProcessor("androidx.room:room-compiler:2.4.0-alpha02")
+
+    // Graph dependencies
+    //implementation("com.github.AnyChart:AnyChart-Android:1.1.5")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
