@@ -20,7 +20,7 @@
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.peky.irrigation_app.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
+        android:label="@string/title_timer"
         tools:layout="@layout/fragment_notifications" />
 
     <fragment
