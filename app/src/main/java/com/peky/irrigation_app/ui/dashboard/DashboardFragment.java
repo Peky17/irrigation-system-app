@@ -57,18 +57,20 @@ public class DashboardFragment extends Fragment {
 
     private void setupPieChart1() {
         ArrayList<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry(30f, "Red"));
-        entries.add(new PieEntry(20f, "Green"));
-        entries.add(new PieEntry(50f, "Blue"));
+        entries.add(new PieEntry(40f, "A"));
+        entries.add(new PieEntry(60f, "B"));
 
         PieDataSet dataSet = new PieDataSet(entries, "Pie Chart 1");
         dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-        dataSet.setValueTextSize(12f);
+        dataSet.setValueTextSize(14f);
 
         PieData data = new PieData(dataSet);
         pieChart1.setData(data);
-        pieChart1.getDescription().setEnabled(false); // Deshabilita la descripción
-        pieChart1.invalidate(); // Actualiza el gráfico
+        pieChart1.getDescription().setEnabled(false);
+        pieChart1.setHoleColor(Color.TRANSPARENT);
+        pieChart1.setHoleRadius(60f);
+        pieChart1.setTransparentCircleRadius(45f);
+        pieChart1.invalidate();
     }
 
     private void setupPieChart2() {
@@ -82,8 +84,11 @@ public class DashboardFragment extends Fragment {
 
         PieData data = new PieData(dataSet);
         pieChart2.setData(data);
-        pieChart2.getDescription().setEnabled(false); // Deshabilita la descripción
-        pieChart2.invalidate(); // Actualiza el gráfico
+        pieChart2.getDescription().setEnabled(false);
+        pieChart2.setHoleColor(Color.TRANSPARENT);
+        pieChart2.setHoleRadius(60f);
+        pieChart2.setTransparentCircleRadius(45f);
+        pieChart2.invalidate();
     }
 
     private void setupLineChart() {
@@ -95,15 +100,29 @@ public class DashboardFragment extends Fragment {
         entries.add(new Entry(3, 30));
         entries.add(new Entry(4, 80));
 
-        // Configurar dataset y línea
+        // Configurar dataset y línea cúbica
         LineDataSet dataSet = new LineDataSet(entries, "Line Chart Dataset");
-        dataSet.setColor(Color.BLUE);
-        dataSet.setValueTextSize(10f);
+        dataSet.setColor(Color.rgb(115, 0, 153));
+        dataSet.setValueTextSize(12f);
+        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER); // Configurar modo cúbico
+        dataSet.setDrawFilled(true); // Opcional: Rellenar el área bajo la curva
+        dataSet.setFillColor(Color.rgb(204, 51, 255)); // Color del relleno (opcional)
+        dataSet.setDrawCircles(false); // Opcional: dibujar círculos en los puntos
 
         // Configurar el gráfico de línea
         LineData lineData = new LineData(dataSet);
         lineChart.setData(lineData);
         lineChart.getDescription().setEnabled(false); // Deshabilita la descripción
+
+        lineChart.getXAxis().setDrawGridLines(false);
+        lineChart.getAxisLeft().setDrawGridLines(false);
+        lineChart.getAxisRight().setDrawGridLines(true);
+
+        // Habilitar líneas (ejes)
+        lineChart.getXAxis().setDrawAxisLine(true);
+        lineChart.getAxisLeft().setDrawAxisLine(true);
+        lineChart.getAxisRight().setDrawAxisLine(true);
+
         lineChart.invalidate(); // Actualiza el gráfico
     }
 
