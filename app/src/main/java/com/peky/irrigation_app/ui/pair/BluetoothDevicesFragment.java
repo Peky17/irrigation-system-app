@@ -11,10 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.peky.irrigation_app.R;
 import com.peky.irrigation_app.services.BluetoothService;
 
 import java.util.ArrayList;
+
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 public class BluetoothDevicesFragment extends Fragment {
 
@@ -44,6 +48,15 @@ public class BluetoothDevicesFragment extends Fragment {
         deviceList = bluetoothService.listPairedDevices();
         BluetoothDeviceAdapter adapter = new BluetoothDeviceAdapter(deviceList, this);
         recyclerView.setAdapter(adapter);
+
+        FloatingActionButton fabBack = view.findViewById(R.id.fabBack);
+        fabBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavController navController = Navigation.findNavController(v);
+                navController.navigateUp();
+            }
+        });
 
         return view;
     }
