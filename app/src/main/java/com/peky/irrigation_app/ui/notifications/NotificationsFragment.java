@@ -22,11 +22,14 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.peky.irrigation_app.R;
 import com.peky.irrigation_app.databinding.FragmentNotificationsBinding;
+import com.peky.irrigation_app.services.BluetoothService;
+import com.peky.irrigation_app.services.DeviceCommandService;
 
 import java.util.ArrayList;
 
 public class NotificationsFragment extends Fragment {
 
+    private BluetoothService bluetoothService;
     private FragmentNotificationsBinding binding;
     private TextView tvTimer1;
     private TextView tvTimer2;
@@ -43,6 +46,8 @@ public class NotificationsFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
+        bluetoothService = BluetoothService.getInstance(requireContext());
 
         binding = FragmentNotificationsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -147,9 +152,13 @@ public class NotificationsFragment extends Fragment {
         if (timerRunning1) {
             pauseTimer1();
             // Stop main actuator
+            DeviceCommandService command = DeviceCommandService.MAIN_ACTUATOR_OFF;
+            sendBluetoothCommand(command.getCommand(), "Main actuator turned off");
         } else {
             startTimer1();
             // Start main actuator
+            DeviceCommandService command = DeviceCommandService.MAIN_ACTUATOR_ON;
+            sendBluetoothCommand(command.getCommand(), "Main actuator turned on");
         }
     }
 
@@ -157,45 +166,59 @@ public class NotificationsFragment extends Fragment {
         if (timerRunning2) {
             pauseTimer2();
             // Stop secondary actuator
+            DeviceCommandService command = DeviceCommandService.SECONDARY_ACTUATOR_OFF;
+            sendBluetoothCommand(command.getCommand(), "Secondary actuator turned off");
         } else {
             startTimer2();
             // Start secondary actuator
+            DeviceCommandService command = DeviceCommandService.SECONDARY_ACTUATOR_ON;
+            sendBluetoothCommand(command.getCommand(), "Secondary actuator turned on");
         }
     }
 
     private void startTimer1() {
+        // Start main actuator
+        DeviceCommandService command = DeviceCommandService.MAIN_ACTUATOR_ON;
+        sendBluetoothCommand(command.getCommand(), "Main actuator turned on");
         countDownTimer1 = new CountDownTimer(timeRemaining1, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 timeRemaining1 = millisUntilFinished;
                 updateTimerText1();
                 updateProgressBar1();
-                // Start main actuator
             }
 
             @Override
             public void onFinish() {
                 timerRunning1 = false;
                 // Stop main actuator when timer1 is finished
+                DeviceCommandService command = DeviceCommandService.MAIN_ACTUATOR_OFF;
+                sendBluetoothCommand(command.getCommand(), "Main actuator turned off");
+                // Reset timer1 when timer1 is finished
+                resetTimer1();
             }
         }.start();
         timerRunning1 = true;
     }
 
     private void startTimer2() {
+        // Start secondary actuator
         countDownTimer2 = new CountDownTimer(timeRemaining2, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 timeRemaining2 = millisUntilFinished;
                 updateTimerText2();
                 updateProgressBar2();
-                // Start secondary actuator
             }
 
             @Override
             public void onFinish() {
                 timerRunning2 = false;
                 // Stop secondary actuator when timer2 is finished
+                DeviceCommandService command = DeviceCommandService.SECONDARY_ACTUATOR_OFF;
+                sendBluetoothCommand(command.getCommand(), "Secondary actuator turned off");
+                // Reset timer1 when timer1 is finished
+                resetTimer2();
             }
         }.start();
         timerRunning2 = true;
@@ -206,6 +229,8 @@ public class NotificationsFragment extends Fragment {
             countDownTimer1.cancel();
             timerRunning1 = false;
             // Stop main actuator
+            DeviceCommandService command = DeviceCommandService.MAIN_ACTUATOR_OFF;
+            sendBluetoothCommand(command.getCommand(), "Main actuator turned off");
         }
     }
 
@@ -214,6 +239,8 @@ public class NotificationsFragment extends Fragment {
             countDownTimer2.cancel();
             timerRunning2 = false;
             // Stop secondary actuator
+            DeviceCommandService command = DeviceCommandService.SECONDARY_ACTUATOR_OFF;
+            sendBluetoothCommand(command.getCommand(), "Secondary actuator turned off");
         }
     }
 
@@ -226,6 +253,8 @@ public class NotificationsFragment extends Fragment {
         updateProgressBar1();
         timerRunning1 = false;
         // Stop main actuator
+        DeviceCommandService command = DeviceCommandService.MAIN_ACTUATOR_OFF;
+        sendBluetoothCommand(command.getCommand(), "Main actuator turned off");
     }
 
     private void resetTimer2() {
@@ -237,6 +266,8 @@ public class NotificationsFragment extends Fragment {
         updateProgressBar2();
         timerRunning2 = false;
         // Stop secondary actuator
+        DeviceCommandService command = DeviceCommandService.SECONDARY_ACTUATOR_OFF;
+        sendBluetoothCommand(command.getCommand(), "Secondary actuator turned off");
     }
 
     private void updateTimerText1() {
@@ -358,4 +389,17 @@ public class NotificationsFragment extends Fragment {
 
         alertDialog.show();
     }
+
+    private void sendBluetoothCommand(String btCommand, String message) {
+        if (bluetoothService.isBluetoothEnabled()) {
+            if (bluetoothService.isDeviceConnected()) {
+                bluetoothService.sendData(btCommand, message);
+            } else {
+                Toast.makeText(requireContext(), "bluetooth is not connected", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(requireContext(), "Bluetooth is not enabled", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -18,7 +19,12 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
     private HomeViewModel homeViewModel;
-    private BluetoothService bluetoothService;
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        homeViewModel.loadSwitchStates(requireContext());
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -27,11 +33,14 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        // Obtener la instancia del servicio de Bluetooth
-        bluetoothService = BluetoothService.getInstance(requireContext());
+        // Inicializa BluetoothService en el ViewModel
+        homeViewModel.initBluetoothService(requireContext());
 
         // Observa los cambios en los estados de los switches y actualiza la UI
         observeSwitches();
+
+        // Carga el estado de los switches
+        homeViewModel.loadSwitchStates(requireContext());
 
         return root;
     }
@@ -65,6 +74,13 @@ public class HomeFragment extends Fragment {
             binding.secondaryActuatorSwitch.setEnabled(!isChecked);
         });
 
+        // Observa los datos recibidos
+        homeViewModel.getReceivedData().observe(getViewLifecycleOwner(), data -> {
+            if (data != null) {
+                homeViewModel.processReceivedData(data);
+            }
+        });
+
         // Configura listeners para cambiar el estado de los switches
         binding.mainActuatorSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (Boolean.TRUE.equals(homeViewModel.getMainActuatorState().getValue()) != isChecked) {
@@ -92,13 +108,13 @@ public class HomeFragment extends Fragment {
         });
     }
 
-
     private void sendBluetoothCommand(String btCommand, String message) {
+        BluetoothService bluetoothService = BluetoothService.getInstance(requireContext());
         if (bluetoothService.isBluetoothEnabled()) {
             if (bluetoothService.isDeviceConnected()) {
                 bluetoothService.sendData(btCommand, message);
             } else {
-                Toast.makeText(requireContext(), "bluetooth is not connected", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Bluetooth is not connected", Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(requireContext(), "Bluetooth is not enabled", Toast.LENGTH_SHORT).show();

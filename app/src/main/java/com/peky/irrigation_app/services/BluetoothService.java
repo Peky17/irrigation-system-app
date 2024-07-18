@@ -89,7 +89,6 @@ public class BluetoothService {
         String[] deviceDetails = deviceInfo.split("\n");
         if (deviceDetails.length < 2) {
             Toast.makeText(context, "Device information is invalid", Toast.LENGTH_SHORT).show();
-            return;
         }
         String deviceAddress = deviceDetails[1];
         BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceAddress);
@@ -103,6 +102,7 @@ public class BluetoothService {
         builder.setView(dialogView);
         builder.setCancelable(false);
         alertDialog = builder.create();
+        alertDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         alertDialog.show();
 
         new Thread(() -> {
@@ -148,7 +148,6 @@ public class BluetoothService {
                 int bytes;
                 bytes = bluetoothSocket.getInputStream().read(buffer);
                 String receivedData = new String(buffer, 0, bytes);
-                Toast.makeText(context, "Datos recibidos exitosamente", Toast.LENGTH_SHORT).show();
                 return receivedData;
             } catch (IOException e) {
                 e.printStackTrace();
